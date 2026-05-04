@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", event => {
     const newTab = document.createElement("li");
     const tabTitle = document.createElement("span");
     const newIframe = document.createElement("iframe");
-    newIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-orientation-lock allow-presentation allow-storage-access-by-user-activation";
+    newIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-orientation-lock allow-presentation allow-storage-access-by-user-activation allow-popups allow-top-navigation-by-user-activation";
     // When Top Navigation is not allowed links with the "top" value will be entirely blocked, if we allow Top Navigation it will overwrite the tab, which is obviously not wanted.
     tabTitle.textContent = `New Tab ${tabCounter}`;
     tabTitle.className = "t";
@@ -112,6 +112,10 @@ document.addEventListener("DOMContentLoaded", event => {
         const pxyUrl = window.__isGetPxyUrl
           ? window.__isGetPxyUrl(url)
           : `/a/${__uv$config.encodeUrl(url)}`;
+        const newWindow = window.open(pxyUrl, "_blank");
+        if (newWindow) {
+          return newWindow;
+        }
         sessionStorage.setItem("URL", pxyUrl);
         createNewTab();
         return null;
