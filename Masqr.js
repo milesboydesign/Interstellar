@@ -47,7 +47,7 @@ export function setupMasqr(app) {
         res.cookie("authcheck", "true", {
           expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         })
-        res.redirect(req.url)
+        next()
         return
       }
 
