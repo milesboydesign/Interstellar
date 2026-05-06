@@ -1026,6 +1026,12 @@
     "categories": ["all"]
   },
   {
+    "name": "Epic Games",
+    "link": "https://www.epicgames.com/",
+    "image": "/assets/media/icons/ep.png",
+    "categories": ["all", "pc"]
+  },
+  {
     "name": "Haunted School 1",
     "link": "https://games.crazygames.com/en_US/haunted-school---horror-game/index.html",
     "image": "/assets/media/icons/na.webp",

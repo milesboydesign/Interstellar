@@ -122,6 +122,12 @@
     "categories": ["all", "stream", "cloud"]
   },
   {
+    "name": "Epic Games",
+    "link": "https://www.epicgames.com/",
+    "image": "/assets/media/icons/ep.png",
+    "categories": ["all", "pc"]
+  },
+  {
     "name": "Github",
     "link": "https://github.com",
     "image": "/assets/media/icons/github.webp",
