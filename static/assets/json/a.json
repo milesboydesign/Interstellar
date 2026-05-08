@@ -128,6 +128,13 @@
     "categories": ["all", "pc"]
   },
   {
+    "name": "Xbox",
+    "link": "https://www.xbox.com/",
+    "image": "/assets/media/icons/pc.png",
+    "categories": ["all", "pc"],
+    "blank": true
+  },
+  {
     "name": "Github",
     "link": "https://github.com",
     "image": "/assets/media/icons/github.webp",

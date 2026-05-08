@@ -1032,6 +1032,13 @@
     "categories": ["all", "pc"]
   },
   {
+    "name": "Xbox",
+    "link": "https://www.xbox.com/",
+    "image": "/assets/media/icons/pc.png",
+    "categories": ["all", "pc"],
+    "blank": true
+  },
+  {
     "name": "Haunted School 1",
     "link": "https://games.crazygames.com/en_US/haunted-school---horror-game/index.html",
     "image": "/assets/media/icons/na.webp",
