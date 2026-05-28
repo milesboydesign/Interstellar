@@ -78,6 +78,15 @@ function go(value) {
 }
 
 function blank(value) {
+  try {
+    const hostname = new URL(value).hostname.toLowerCase();
+    if (hostname.includes("steam")) {
+      window.location.href = value;
+      return;
+    }
+  } catch {
+    // fall back to proxy handling for malformed URLs
+  }
   processUrl(value);
 }
 
