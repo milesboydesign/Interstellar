@@ -79,12 +79,27 @@ function go(value) {
 
 function blank(value) {
   try {
-    const hostname = new URL(value).hostname.toLowerCase();
-    if (hostname.includes("steam")) {
-      window.location.href = value;
+    const url = new URL(value);
+    const hostname = url.hostname.toLowerCase();
+    const protocol = url.protocol.toLowerCase();
+
+    if (protocol === "steam:" || hostname.includes("steam")) {
+      try {
+        top.location.href = value;
+      } catch {
+        window.location.href = value;
+      }
       return;
     }
   } catch {
+    if (value.toLowerCase().startsWith("steam://")) {
+      try {
+        top.location.href = value;
+      } catch {
+        window.location.href = value;
+      }
+      return;
+    }
     // fall back to proxy handling for malformed URLs
   }
   processUrl(value);
