@@ -125,28 +125,38 @@ document.addEventListener("DOMContentLoaded", event => {
       } else {
         tabTitle.textContent = title;
       }
+
+      const routePopupInCurrentFrame = url => {
+        const pxyUrl = window.__isGetPxyUrl
+          ? window.__isGetPxyUrl(url)
+          : `/a/${__uv$config.encodeUrl(url)}`;
+
+        newIframe.dataset.tabUrl = url;
+        newIframe.src = pxyUrl;
+        const input = document.getElementById("input");
+        if (input) {
+          input.value = url;
+        }
+        return newIframe.contentWindow;
+      };
+
+      const shouldReuseCurrentFrame = url => {
+        try {
+          const popupUrl = new URL(url);
+          const hostname = popupUrl.hostname.toLowerCase();
+          return hostname.includes("xbox") || hostname.includes("live.com") || hostname.includes("microsoftonline.com") || hostname.includes("microsoft.com") || hostname.includes("msauth");
+        } catch {
+          return false;
+        }
+      };
+
       newIframe.contentWindow.open = url => {
         const pxyUrl = window.__isGetPxyUrl
           ? window.__isGetPxyUrl(url)
           : `/a/${__uv$config.encodeUrl(url)}`;
 
-        let shouldReuseCurrentFrame = false;
-        try {
-          const popupUrl = new URL(url);
-          const hostname = popupUrl.hostname.toLowerCase();
-          shouldReuseCurrentFrame = hostname.includes("xbox") || hostname.includes("live.com") || hostname.includes("microsoftonline.com");
-        } catch {
-          shouldReuseCurrentFrame = false;
-        }
-
-        if (shouldReuseCurrentFrame) {
-          newIframe.dataset.tabUrl = url;
-          newIframe.src = pxyUrl;
-          const input = document.getElementById("input");
-          if (input) {
-            input.value = url;
-          }
-          return newIframe.contentWindow;
+        if (shouldReuseCurrentFrame(url)) {
+          return routePopupInCurrentFrame(url);
         }
 
         const newWindow = window.open(pxyUrl, "_blank");
@@ -157,6 +167,31 @@ document.addEventListener("DOMContentLoaded", event => {
         createNewTab();
         return null;
       };
+
+      try {
+        newIframe.contentDocument.addEventListener("click", event => {
+          const target = event.target;
+          if (!(target instanceof Element)) {
+            return;
+          }
+
+          const anchor = target.closest("a");
+          if (!anchor) {
+            return;
+          }
+
+          const href = anchor.href;
+          if (!href || !shouldReuseCurrentFrame(href)) {
+            return;
+          }
+
+          event.preventDefault();
+          routePopupInCurrentFrame(href);
+        }, true);
+      } catch {
+        // the iframe document may not be accessible yet; retry on the next load
+      }
+
       if (newIframe.contentDocument.documentElement.outerHTML.trim().length > 0) {
         Load();
       }
