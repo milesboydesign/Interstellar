@@ -131,13 +131,15 @@ document.addEventListener("DOMContentLoaded", event => {
           ? window.__isGetPxyUrl(url)
           : `/a/${__uv$config.encodeUrl(url)}`;
 
-        newIframe.dataset.tabUrl = url;
-        newIframe.src = pxyUrl;
+        sessionStorage.setItem("URL", pxyUrl);
+        sessionStorage.setItem("GoUrl", pxyUrl);
+        createNewTab();
+
         const input = document.getElementById("input");
         if (input) {
           input.value = url;
         }
-        return newIframe.contentWindow;
+        return null;
       };
 
       const shouldReuseCurrentFrame = url => {
