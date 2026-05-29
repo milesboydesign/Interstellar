@@ -36,7 +36,20 @@ function useScramjetPxy() {
   return p === "sj";
 }
 
+function isSpecialProtocolUrl(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:";
+  } catch {
+    return /^(?:[a-z][a-z0-9+.-]*:)/i.test(url);
+  }
+}
+
 async function getPxyUrl(url) {
+  if (isSpecialProtocolUrl(url)) {
+    return url;
+  }
+
   if (useScramjetPxy()) {
     if (window.__isSjReady) {
       await window.__isSjReady;
@@ -54,7 +67,9 @@ async function processUrl(value, path) {
   const engine = localStorage.getItem("engine");
   const searchUrl = engine ? engine : "https://search.brave.com/search?q=";
 
-  if (!isUrl(url)) {
+  if (isSpecialProtocolUrl(url)) {
+    // keep custom protocols like chromeos-steam:// direct instead of sending them through proxy layers
+  } else if (!isUrl(url)) {
     url = searchUrl + url;
   } else if (!(url.startsWith("https://") || url.startsWith("http://"))) {
     url = `https://${url}`;
@@ -83,7 +98,7 @@ function blank(value) {
     const hostname = url.hostname.toLowerCase();
     const protocol = url.protocol.toLowerCase();
 
-    if (protocol === "steam:" || hostname.includes("steam")) {
+    if (protocol.includes("steam:") || hostname.includes("steam")) {
       try {
         top.location.href = value;
       } catch {
@@ -92,7 +107,8 @@ function blank(value) {
       return;
     }
   } catch {
-    if (value.toLowerCase().startsWith("steam://")) {
+    const lowerValue = value.toLowerCase();
+    if (lowerValue.startsWith("steam://") || lowerValue.startsWith("chromeos-steam://")) {
       try {
         top.location.href = value;
       } catch {

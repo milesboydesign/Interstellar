@@ -17,7 +17,20 @@ window.addEventListener("load", () => {
     return p === "sj";
   }
 
+  function isSpecialProtocolUrl(url) {
+    try {
+      const parsedUrl = new URL(url);
+      return parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:";
+    } catch {
+      return /^(?:[a-z][a-z0-9+.-]*:)/i.test(url);
+    }
+  }
+
   async function getPxyUrl(url) {
+    if (isSpecialProtocolUrl(url)) {
+      return url;
+    }
+
     if (useScramjetPxy()) {
       if (window.__isSjReady) {
         await window.__isSjReady;
@@ -31,6 +44,10 @@ window.addEventListener("load", () => {
   }
 
   function getPxyUrlSync(url) {
+    if (isSpecialProtocolUrl(url)) {
+      return url;
+    }
+
     if (useScramjetPxy() && window.__isSj?.encodeUrl) {
       return window.__isSj.encodeUrl(url);
     }
@@ -112,6 +129,26 @@ document.addEventListener("DOMContentLoaded", event => {
         const pxyUrl = window.__isGetPxyUrl
           ? window.__isGetPxyUrl(url)
           : `/a/${__uv$config.encodeUrl(url)}`;
+
+        let shouldReuseCurrentFrame = false;
+        try {
+          const popupUrl = new URL(url);
+          const hostname = popupUrl.hostname.toLowerCase();
+          shouldReuseCurrentFrame = hostname.includes("xbox") || hostname.includes("live.com") || hostname.includes("microsoftonline.com");
+        } catch {
+          shouldReuseCurrentFrame = false;
+        }
+
+        if (shouldReuseCurrentFrame) {
+          newIframe.dataset.tabUrl = url;
+          newIframe.src = pxyUrl;
+          const input = document.getElementById("input");
+          if (input) {
+            input.value = url;
+          }
+          return newIframe.contentWindow;
+        }
+
         const newWindow = window.open(pxyUrl, "_blank");
         if (newWindow) {
           return newWindow;
