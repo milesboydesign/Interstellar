@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", event => {
     const newTab = document.createElement("li");
     const tabTitle = document.createElement("span");
     const newIframe = document.createElement("iframe");
-    newIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-orientation-lock allow-presentation allow-storage-access-by-user-activation allow-popups allow-top-navigation-by-user-activation";
+    newIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-orientation-lock allow-presentation allow-storage-access-by-user-activation allow-top-navigation-by-user-activation";
     // When Top Navigation is not allowed links with the "top" value will be entirely blocked, if we allow Top Navigation it will overwrite the tab, which is obviously not wanted.
     tabTitle.textContent = `New Tab ${tabCounter}`;
     tabTitle.className = "t";
@@ -146,28 +146,14 @@ document.addEventListener("DOMContentLoaded", event => {
         try {
           const popupUrl = new URL(url);
           const hostname = popupUrl.hostname.toLowerCase();
-          return hostname.includes("xbox") || hostname.includes("live.com") || hostname.includes("microsoftonline.com") || hostname.includes("microsoft.com") || hostname.includes("msauth");
+          return hostname.includes("xbox") || hostname.includes("live.com") || hostname.includes("microsoftonline.com") || hostname.includes("microsoft.com") || hostname.includes("msauth") || hostname.includes("minecraft");
         } catch {
           return false;
         }
       };
 
       newIframe.contentWindow.open = url => {
-        const pxyUrl = window.__isGetPxyUrl
-          ? window.__isGetPxyUrl(url)
-          : `/a/${__uv$config.encodeUrl(url)}`;
-
-        if (shouldReuseCurrentFrame(url)) {
-          return routePopupInCurrentFrame(url);
-        }
-
-        const newWindow = window.open(pxyUrl, "_blank");
-        if (newWindow) {
-          return newWindow;
-        }
-        sessionStorage.setItem("URL", pxyUrl);
-        createNewTab();
-        return null;
+        return routePopupInCurrentFrame(url);
       };
 
       try {
